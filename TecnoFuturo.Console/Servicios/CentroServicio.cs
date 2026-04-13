@@ -39,7 +39,7 @@ public class CentroServicio
         };
         _centroRepository.InsertarCentro(_centro);
     }
-
+    
     public void Run()
     {
         
@@ -198,7 +198,7 @@ public class CentroServicio
         System.Console.WriteLine("|  6. Listar modulos                       |");
         System.Console.WriteLine("|  7. Seleccionar módulo                   |");
         System.Console.WriteLine("|  8. Registrar profesor                   |");
-        System.Console.WriteLine("|  9. Mostar profesores                    |");
+        System.Console.WriteLine("|  9. Mostrar profesores                   |");
         System.Console.WriteLine("| 10. Registrar profesor a módulo          |");
         System.Console.WriteLine("| 11. Matricular alumno                    |");
         System.Console.WriteLine("| 12. Listar Alumnos                       |");
@@ -327,7 +327,9 @@ public class CentroServicio
                 return null;
             }
 
-            modulo = _moduloRepository.ObtenerModuloPorId(codigo.Value);
+            modulo = _moduloRepository
+    .ObtenerModulosPorCicloFormativo(cicloFormativo.CicloFormativoId)
+    .FirstOrDefault(m => m.ModuloId == codigo.Value);
 
         } while (modulo == null);
 
@@ -340,9 +342,10 @@ public class CentroServicio
         {
             var profesor = new Profesor
             {
+                CentroId = _centro.CentroId,
                 Nif = Leer.Cadena("Introduzca el NIF:", true, @"^([0-9]{8}|[XYZxyz][0-9]{7})[a-zA-Z]$")!,
                 Nombre = Leer.Cadena("Introduzca el nombre:", true)!,
-                Direccíon = Leer.Cadena("Introduzca la dirección:", true)!,
+                Direccion = Leer.Cadena("Introduzca la dirección:", true)!,
                 Email = Leer.Cadena("Introduzca el e-Mail:", true,@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")!,
                 Telefono = Leer.Cadena("Introduzca el teléfono:", true)!
             };
@@ -414,7 +417,7 @@ public class CentroServicio
             {
                 Nif = Leer.Cadena("NIF .......: ", true)!,
                 Nombre = Leer.Cadena("Nombre ....: ", true)!,
-                Direccíon = Leer.Cadena("Dirección .: ", true)!,
+                Direccion = Leer.Cadena("Dirección .: ", true)!,
                 Email = Leer.Cadena("e-Mail ....: ", true)!,
                 Telefono = Leer.Cadena("Telefono ..: ", true)!,
                 CentroId = cicloFormativo.CentroId,

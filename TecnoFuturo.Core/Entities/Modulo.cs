@@ -12,6 +12,9 @@ public class Modulo : IInfoDetallada
 
     public string ObtenerFicha()
     {
-        throw new NotImplementedException();
+        return $"MODULO: {Nombre} " +
+           $"CODIGO: {ModuloId} " +
+           $"HORAS: {Horas} " +
+           $"PROFESOR: {ProfesorNif}";
     }
 }

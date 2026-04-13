@@ -11,6 +11,9 @@ public class Centro : IInfoDetallada
 
     public string ObtenerFicha()
     {
-        throw new NotImplementedException();
+        return $"CENTRO: {Nombre} " +
+           $"ID: {CentroId} " +
+           $"DIRECCION: {Direccion} " +
+           $"TELEFONO: {Telefono}";
     }
 }

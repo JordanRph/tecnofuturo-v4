@@ -43,11 +43,14 @@ public class AlumnoRepository : IAlumnoRepository
         }
 
         var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
-        if (centroRepository.ObtenerCentroPorId(alumno.CentroId) == null)
+        var centro = centroRepository.ObtenerCentroPorId(alumno.CentroId) ?? throw new ArgumentException("El centro especificado no existe", nameof(alumno));
+        var cicloRepository = _serviceProvider.GetRequiredService<ICicloFormativoRepository>();
+        var ciclo = cicloRepository.ObtenerCicloFormativoPorId(alumno.CicloFormativoId) ?? throw new ArgumentException("El ciclo formativo especificado no existe", nameof(alumno));
+        if (ciclo.CentroId != alumno.CentroId)
         {
-            throw new ArgumentException("El centro especificado no existe", nameof(alumno));
+            throw new ArgumentException("El ciclo formativo no pertenece al centro del alumno", nameof(alumno));
         }
-        
+
         return _alumnos[alumno.Nif] = alumno;
     }
 
@@ -57,13 +60,16 @@ public class AlumnoRepository : IAlumnoRepository
         {
             throw new ArgumentException("El alumno no existe", nameof(alumno));
         }
-        
+
         var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
-        if (centroRepository.ObtenerCentroPorId(alumno.CentroId) == null)
+        var centro = centroRepository.ObtenerCentroPorId(alumno.CentroId) ?? throw new ArgumentException("El centro especificado no existe", nameof(alumno));
+        var cicloRepository = _serviceProvider.GetRequiredService<ICicloFormativoRepository>();
+        var ciclo = cicloRepository.ObtenerCicloFormativoPorId(alumno.CicloFormativoId) ?? throw new ArgumentException("El ciclo formativo especificado no existe", nameof(alumno));
+        if (ciclo.CentroId != alumno.CentroId)
         {
-            throw new ArgumentException("El centro especificado no existe", nameof(alumno));
+            throw new ArgumentException("El ciclo formativo no pertenece al centro del alumno", nameof(alumno));
         }
-        
+
         return _alumnos[alumno.Nif] = alumno;
     }
 

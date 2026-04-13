@@ -9,6 +9,9 @@ public class Alumno : Persona, IInfoDetallada
 
     public string ObtenerFicha()
     {
-        throw new NotImplementedException();
+        return $"NOMBRE: {Nombre} " +
+           $"NIF: {Nif} " +
+           $"EMAIL: {Email} " +
+           $"CICLO: {CicloFormativoId}";
     }
 }

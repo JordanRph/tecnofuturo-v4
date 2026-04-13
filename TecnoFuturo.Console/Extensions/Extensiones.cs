@@ -51,10 +51,18 @@ public static class Extensiones
                 System.Console.WriteLine($"CODIGO .: {modulo.ModuloId}");
                 System.Console.WriteLine($"NOMBRE .: {modulo.Nombre}");
                 System.Console.WriteLine($"HORAS ..: {modulo.Horas:N0}");
-                if (modulo.ProfesorNif != null)
+                if (!string.IsNullOrWhiteSpace(modulo.ProfesorNif))
                 {
                     var profesor = profesorRepository.ObtenerProfesorPorNif(modulo.ProfesorNif);
-                    System.Console.WriteLine($"PROFESOR : {profesor.Nombre}");
+
+                    if (profesor != null)
+                    {
+                        System.Console.WriteLine($"PROFESOR : {profesor.Nombre}");
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("PROFESOR : NO ENCONTRADO");
+                    }
                 }
                 else
                 {
@@ -78,7 +86,7 @@ public static class Extensiones
             System.Console.WriteLine(new string('-', 85));
             foreach (var profesor in profesores)
             {
-                profesor.ObtenerFicha();
+                System.Console.WriteLine(profesor.ObtenerFicha());
                 System.Console.WriteLine(new string('-', 85));
             }
         }
@@ -103,7 +111,7 @@ public static class Extensiones
                 System.Console.WriteLine($"NIF ,,,,,,: {alumno.Nif}");
                 System.Console.WriteLine($"NOMBRE  ..: {alumno.Nombre}");
                 System.Console.WriteLine($"EMAIL ....: {alumno.Email}");
-                System.Console.WriteLine($"DIRECCION : {alumno.Direccíon}");
+                System.Console.WriteLine($"DIRECCION : {alumno.Direccion}");
                 System.Console.WriteLine(new string('-', 102));
             }
 
@@ -137,7 +145,7 @@ public static class Extensiones
         foreach (var ciclosFormativo in ciclosFormativos)
         {
             var alumnosPorCiclo = alumnoRepository.ObtenerAlumnosPorCicloFormativo(ciclosFormativo.CicloFormativoId);
-            System.Console.WriteLine($"Alumnos en {ciclosFormativo.Nombre} : {alumnosPorCiclo.Count:10:N0}");
+            System.Console.WriteLine($"Alumnos en {ciclosFormativo.Nombre} : {alumnosPorCiclo.Count:N0}");
         }
     }
 }

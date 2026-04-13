@@ -155,7 +155,7 @@ class Program
             Nif = "11111111C",
             Nombre = "Carlos Ruiz",
             Email = "carlos@carlos.com",
-            Direcci­on = "Calle Sol 5",
+            Direccion = "Calle Sol 5",
             Telefono = "611111111"
         });
 
@@ -166,7 +166,7 @@ class Program
             Nif = "22222222D",
             Nombre = "Marta Gil",
             Email = "marta@marta.com",
-            Direcci­on = "Calle Luna 8",
+            Direccion = "Calle Luna 8",
             Telefono = "622222222"
         });
 

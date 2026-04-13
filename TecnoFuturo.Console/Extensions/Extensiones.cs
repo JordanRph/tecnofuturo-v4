@@ -1,5 +1,6 @@
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Core.DTOs;
 
 namespace TecnoFuturo.Console.Extensions;
 
@@ -7,11 +8,12 @@ public static class Extensiones
 {
     public static void MostarInformacion(this Centro centro)
     {
-        System.Console.WriteLine($" -> Centro: {centro.Nombre} [{centro.CentroId}]");
-        System.Console.WriteLine($" -> Direccion: {centro.Direccion}");
-        System.Console.WriteLine($" -> Telefono: {centro.Telefono}");
+        // System.Console.WriteLine(centro.ObtenerFicha());
+        var centroDTO = new CentroDTO(centro.CentroId, centro.Nombre, centro.Direccion, centro.Telefono);
+
+        System.Console.WriteLine(centroDTO);
     }
-    
+
     public static void MostarInformacion(this CicloFormativo cicloFormativo)
     {
         System.Console.WriteLine($" -> Ciclo Formativo: {cicloFormativo.Nombre} [{cicloFormativo.CicloFormativoId}]");
@@ -32,49 +34,40 @@ public static class Extensiones
         System.Console.WriteLine(new string('-', 85));
         foreach (var ciclosFormativo in ciclosFormativos)
         {
-            System.Console.WriteLine($"CODIGO : {ciclosFormativo.CicloFormativoId}");
-            System.Console.WriteLine($"NOMBRE : {ciclosFormativo.Nombre}");
-            System.Console.WriteLine($"TUNO ..: {ciclosFormativo.Turno}");
+            var cicloDTO = new CicloFormativoDTO(ciclosFormativo.CicloFormativoId, ciclosFormativo.Nombre, ciclosFormativo.Turno.ToString());
+
+            System.Console.WriteLine(cicloDTO);
             System.Console.WriteLine(new string('-', 85));
         }
     }
 
-    public static void MostarModulos(this CicloFormativo cicloFormativo, IModuloRepository moduloRepository,
-        IProfesorRepository profesorRepository)
+    public static void MostrarModulos(this CicloFormativo cicloFormativo, IModuloRepository moduloRepository,
+    IProfesorRepository profesorRepository)
     {
         var modulos = moduloRepository.ObtenerModulosPorCicloFormativo(cicloFormativo.CicloFormativoId);
-        if (modulos.Count != 0)
-        {
-            System.Console.WriteLine(new string('-', 85));
-            foreach (var modulo in modulos)
-            {
-                System.Console.WriteLine($"CODIGO .: {modulo.ModuloId}");
-                System.Console.WriteLine($"NOMBRE .: {modulo.Nombre}");
-                System.Console.WriteLine($"HORAS ..: {modulo.Horas:N0}");
-                if (!string.IsNullOrWhiteSpace(modulo.ProfesorNif))
-                {
-                    var profesor = profesorRepository.ObtenerProfesorPorNif(modulo.ProfesorNif);
 
-                    if (profesor != null)
-                    {
-                        System.Console.WriteLine($"PROFESOR : {profesor.Nombre}");
-                    }
-                    else
-                    {
-                        System.Console.WriteLine("PROFESOR : NO ENCONTRADO");
-                    }
-                }
-                else
-                {
-                    System.Console.WriteLine("SIN PROFESOR ASIGNADO");
-                }
-
-                System.Console.WriteLine(new string('-', 85));
-            }
-        }
-        else
+        if (modulos.Count == 0)
         {
             System.Console.WriteLine("NO HAY MODULOS REGISTRADOS");
+            return;
+        }
+
+        System.Console.WriteLine(new string('-', 85));
+
+        foreach (var modulo in modulos)
+        {
+            string nombreProfesor = "SIN PROFESOR ASIGNADO";
+
+            if (!string.IsNullOrWhiteSpace(modulo.ProfesorNif))
+            {
+                var profesor = profesorRepository.ObtenerProfesorPorNif(modulo.ProfesorNif);
+                nombreProfesor = profesor != null ? profesor.Nombre : "PROFESOR NO ENCONTRADO";
+            }
+
+            var moduloDTO = new ModuloDTO(modulo.ModuloId,modulo.Nombre,modulo.Horas,nombreProfesor);
+
+            System.Console.WriteLine(moduloDTO);
+            System.Console.WriteLine(new string('-', 85));
         }
     }
 
@@ -86,7 +79,9 @@ public static class Extensiones
             System.Console.WriteLine(new string('-', 85));
             foreach (var profesor in profesores)
             {
-                System.Console.WriteLine(profesor.ObtenerFicha());
+                // System.Console.WriteLine(profesor.ObtenerFicha());
+                var profesorDTO = new ProfesorDTO(profesor.Nif, profesor.Nombre, profesor.Email);
+                System.Console.WriteLine(profesorDTO);
                 System.Console.WriteLine(new string('-', 85));
             }
         }
@@ -95,7 +90,7 @@ public static class Extensiones
             System.Console.WriteLine("NO HAY PROFESORES REGISTRADOS");
         }
     }
-    
+
 
     public static void MostrarAlumnos(this CicloFormativo cicloFormativo, IAlumnoRepository alumnoRepository)
     {
@@ -108,10 +103,10 @@ public static class Extensiones
             System.Console.WriteLine(new string('-', 102));
             foreach (var alumno in alumnos)
             {
-                System.Console.WriteLine($"NIF ,,,,,,: {alumno.Nif}");
-                System.Console.WriteLine($"NOMBRE  ..: {alumno.Nombre}");
-                System.Console.WriteLine($"EMAIL ....: {alumno.Email}");
-                System.Console.WriteLine($"DIRECCION : {alumno.Direccion}");
+                // System.Console.WriteLine(alumno.ObtenerFicha());
+                var alumnoDTO = new AlumnoDTO(alumno.Nif, alumno.Nombre, alumno.Email);
+
+                System.Console.WriteLine(alumnoDTO);
                 System.Console.WriteLine(new string('-', 102));
             }
 

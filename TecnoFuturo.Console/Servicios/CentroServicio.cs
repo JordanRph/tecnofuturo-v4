@@ -109,7 +109,7 @@ public class CentroServicio
                 case "6":
                     if (cicloFormativoSeleccionado != null)
                     {
-                        cicloFormativoSeleccionado.MostarModulos(_moduloRepository, _profesorRepository);
+                        cicloFormativoSeleccionado.MostrarModulos(_moduloRepository, _profesorRepository);
                     }
                     else
                     {
@@ -316,7 +316,7 @@ public class CentroServicio
     private Modulo? SeleccionarModulo(CicloFormativo cicloFormativo)
     {
         Modulo? modulo;
-        cicloFormativo.MostarModulos(_moduloRepository, _profesorRepository);
+        cicloFormativo.MostrarModulos(_moduloRepository, _profesorRepository);
         do
         {
             System.Console.WriteLine("SELECCIONAR MODULO");

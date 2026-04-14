@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Core.DTOs;
 
 public class CicloFormativoRepositoryLista : ICicloFormativoRepository
 {
@@ -12,7 +13,7 @@ public class CicloFormativoRepositoryLista : ICicloFormativoRepository
         _serviceProvider = serviceProvider;
     }
 
-    public IReadOnlyList<CicloFormativo> ObtenerCiclosFormativos()
+    public IReadOnlyList<CicloFormativoDTO> ObtenerCiclosFormativos()
     {
         return _ciclosFormativos.ToList();
     }
@@ -93,5 +94,12 @@ public class CicloFormativoRepositoryLista : ICicloFormativoRepository
 
         _ciclosFormativos.Remove(cicloFormativo);
         return true;
+    }
+    private CicloFormativoDTO ToMap(CicloFormativo ciclo)
+    {
+        return new CicloFormativoDTO(
+            ciclo.Nombre,
+            ciclo.CicloFormativoId,
+            ciclo.Turno);
     }
 }

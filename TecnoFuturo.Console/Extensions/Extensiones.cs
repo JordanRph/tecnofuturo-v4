@@ -6,12 +6,9 @@ namespace TecnoFuturo.Console.Extensions;
 
 public static class Extensiones
 {
-    public static void MostarInformacion(this Centro centro)
+    public static void MostarInformacion(this CentroDTO centro)
     {
-        // System.Console.WriteLine(centro.ObtenerFicha());
-        var centroDTO = new CentroDTO(centro.CentroId, centro.Nombre, centro.Direccion, centro.Telefono);
-
-        System.Console.WriteLine(centroDTO);
+        System.Console.WriteLine(centro.ObtenerFicha());
     }
 
     public static void MostarInformacion(this CicloFormativo cicloFormativo)
@@ -103,10 +100,7 @@ public static class Extensiones
             System.Console.WriteLine(new string('-', 102));
             foreach (var alumno in alumnos)
             {
-                // System.Console.WriteLine(alumno.ObtenerFicha());
-                var alumnoDTO = new AlumnoDTO(alumno.Nif, alumno.Nombre, alumno.Email);
-
-                System.Console.WriteLine(alumnoDTO);
+                System.Console.WriteLine(alumno.ObtenerFicha());
                 System.Console.WriteLine(new string('-', 102));
             }
 

@@ -1,4 +1,4 @@
 ﻿namespace TecnoFuturo.Core.DTOs
 {
-    public record ProfesorDTO(string Nif, string Nombre, string Email);
+    public record ProfesorDTO(string Nif, string Nombre, string Email, string Direccion, string Telefono);
 }

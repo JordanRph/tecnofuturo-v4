@@ -12,6 +12,7 @@ public class Alumno : Persona, IInfoDetallada
         return $"NOMBRE: {Nombre} " +
            $"NIF: {Nif} " +
            $"EMAIL: {Email} " +
-           $"CICLO: {CicloFormativoId}";
+           $"DIRECCION: {Direccion}" + 
+           $"Telefono {Telefono}";
     }
 }

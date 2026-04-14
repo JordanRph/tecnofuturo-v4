@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using TecnoFuturo.Core;
+using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
 
@@ -15,27 +17,29 @@ public class AlumnoRepository : IAlumnoRepository
         _serviceProvider = serviceProvider;
     }
 
-    public IReadOnlyList<Alumno> ObtenerAlumnos()
+    public IReadOnlyList<AlumnoDTO> ObtenerAlumnos()
     {
-        return _alumnos.Values.ToList();
+        return _alumnos.Values.Select(x=> ToMap(x)).ToList();
     }
 
-    public IReadOnlyList<Alumno> ObtenerAlumnosPorCicloFormativo(string cicloFormativoId)
+    public IReadOnlyList<AlumnoDTO> ObtenerAlumnosPorCicloFormativo(string cicloFormativoId)
     {
-        return _alumnos.Values.Where(alumno => alumno.CicloFormativoId == cicloFormativoId).ToList();
+        return _alumnos.Values
+        .Where(a => a.CicloFormativoId == cicloFormativoId).Select(ToMap).ToList();
     }
 
-    public IReadOnlyList<Alumno> ObtenerAlumnosPorCentro(int centroId)
+    public IReadOnlyList<AlumnoDTO> ObtenerAlumnosPorCentro(int centroId)
     {
-        return _alumnos.Values.Where(alumno => alumno.CentroId == centroId).ToList();
+         return _alumnos.Values.Where(a => a.CentroId == centroId).Select(ToMap).ToList();
     }
 
-    public Alumno? ObtenerAlumnoPorNif(string nif)
+    public AlumnoDTO? ObtenerAlumnoPorNif(string nif)
     {
-        return _alumnos.GetValueOrDefault(nif);
+        var alumno = _alumnos.GetValueOrDefault(nif);
+        return alumno is null ? null : ToMap(alumno);
     }
 
-    public Alumno InsertarAlumno(Alumno alumno)
+    public AlumnoDTO InsertarAlumno(Alumno alumno)
     {
         if (_alumnos.ContainsKey(alumno.Nif))
         {
@@ -51,10 +55,11 @@ public class AlumnoRepository : IAlumnoRepository
             throw new ArgumentException("El ciclo formativo no pertenece al centro del alumno", nameof(alumno));
         }
 
-        return _alumnos[alumno.Nif] = alumno;
+        _alumnos[alumno.Nif] = alumno;
+        return ToMap(alumno);
     }
 
-    public Alumno ModificarAlumno(Alumno alumno)
+    public AlumnoDTO ModificarAlumno(Alumno alumno)
     {
         if (!_alumnos.ContainsKey(alumno.Nif))
         {
@@ -70,7 +75,8 @@ public class AlumnoRepository : IAlumnoRepository
             throw new ArgumentException("El ciclo formativo no pertenece al centro del alumno", nameof(alumno));
         }
 
-        return _alumnos[alumno.Nif] = alumno;
+         _alumnos[alumno.Nif] = alumno;
+        return ToMap(alumno);
     }
 
     public bool BorrarAlumno(string nif)
@@ -80,5 +86,16 @@ public class AlumnoRepository : IAlumnoRepository
             return false;
         }
         return _alumnos.Remove(nif);
+    }
+    private AlumnoDTO ToMap(Alumno a)
+    {
+        return new AlumnoDTO
+        (
+            a.Nombre,
+            a.Nif,
+            a.Email,
+            a.Direccion,
+            a.Telefono
+        );
     }
 }

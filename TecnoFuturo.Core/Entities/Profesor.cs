@@ -10,6 +10,8 @@ public class Profesor : Persona, IInfoDetallada
     {
         return $"NOMBRE: {Nombre} " +
             $"NIF: {Nif} " +
-            $"EMAIL : {Email}";
+            $"EMAIL: {Email}" +
+            $"DIRECCIÓN: {Direccion}"+
+            $"TELÉFONO: {Telefono}";
     }
 }

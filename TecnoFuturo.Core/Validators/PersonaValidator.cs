@@ -14,7 +14,7 @@ public partial class PersonaValidator : IValidator<Persona>
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(entity.Email) ||
+        if (string.IsNullOrWhiteSpace(entity.Email) &&
             !EmailRegex().IsMatch(entity.Email))
         {
             return false;

@@ -6,16 +6,21 @@ namespace TecnoFuturo.Console.Extensions;
 
 public static class Extensiones
 {
-    public static void MostarInformacion(this CentroDTO centro)
+    public static void MostrarInformacion(this Centro centro)
     {
-        System.Console.WriteLine(centro.ObtenerFicha());
+        var centroDTO = new CentroDTO(
+            centro.CentroId,
+            centro.Nombre,
+            centro.Direccion,
+            centro.Telefono
+        );
+
+        System.Console.WriteLine(centroDTO);
     }
 
-    public static void MostarInformacion(this CicloFormativo cicloFormativo)
+    public static void MostarInformacion(this CicloFormativoDTO cicloFormativo)
     {
-        System.Console.WriteLine($" -> Ciclo Formativo: {cicloFormativo.Nombre} [{cicloFormativo.CicloFormativoId}]");
-        System.Console.WriteLine($" -> Turno: {cicloFormativo.Turno}");
-    }
+        System.Console.WriteLine(cicloFormativo);    }
 
     public static void MostarCiclosFormativos(this Centro centro, ICicloFormativoRepository cicloFormativoRepository)
     {
@@ -31,14 +36,13 @@ public static class Extensiones
         System.Console.WriteLine(new string('-', 85));
         foreach (var ciclosFormativo in ciclosFormativos)
         {
-            var cicloDTO = new CicloFormativoDTO(ciclosFormativo.CicloFormativoId, ciclosFormativo.Nombre, ciclosFormativo.Turno.ToString());
 
-            System.Console.WriteLine(cicloDTO);
+            System.Console.WriteLine(ciclosFormativo);
             System.Console.WriteLine(new string('-', 85));
         }
     }
 
-    public static void MostrarModulos(this CicloFormativo cicloFormativo, IModuloRepository moduloRepository,
+    public static void MostrarModulos(this CicloFormativoDTO cicloFormativo, IModuloRepository moduloRepository,
     IProfesorRepository profesorRepository)
     {
         var modulos = moduloRepository.ObtenerModulosPorCicloFormativo(cicloFormativo.CicloFormativoId);
@@ -55,15 +59,13 @@ public static class Extensiones
         {
             string nombreProfesor = "SIN PROFESOR ASIGNADO";
 
-            if (!string.IsNullOrWhiteSpace(modulo.ProfesorNif))
+            if (!string.IsNullOrWhiteSpace(modulo.Profesor))
             {
-                var profesor = profesorRepository.ObtenerProfesorPorNif(modulo.ProfesorNif);
+                var profesor = profesorRepository.ObtenerProfesorPorNif(modulo.Profesor);
                 nombreProfesor = profesor != null ? profesor.Nombre : "PROFESOR NO ENCONTRADO";
             }
 
-            var moduloDTO = new ModuloDTO(modulo.ModuloId,modulo.Nombre,modulo.Horas,nombreProfesor);
-
-            System.Console.WriteLine(moduloDTO);
+            System.Console.WriteLine(modulo);
             System.Console.WriteLine(new string('-', 85));
         }
     }
@@ -76,9 +78,7 @@ public static class Extensiones
             System.Console.WriteLine(new string('-', 85));
             foreach (var profesor in profesores)
             {
-                // System.Console.WriteLine(profesor.ObtenerFicha());
-                var profesorDTO = new ProfesorDTO(profesor.Nif, profesor.Nombre, profesor.Email);
-                System.Console.WriteLine(profesorDTO);
+                System.Console.WriteLine(profesor);
                 System.Console.WriteLine(new string('-', 85));
             }
         }
@@ -89,7 +89,7 @@ public static class Extensiones
     }
 
 
-    public static void MostrarAlumnos(this CicloFormativo cicloFormativo, IAlumnoRepository alumnoRepository)
+    public static void MostrarAlumnos(this CicloFormativoDTO cicloFormativo, IAlumnoRepository alumnoRepository)
     {
         var alumnos = alumnoRepository.ObtenerAlumnosPorCicloFormativo(cicloFormativo.CicloFormativoId);
 
@@ -100,7 +100,7 @@ public static class Extensiones
             System.Console.WriteLine(new string('-', 102));
             foreach (var alumno in alumnos)
             {
-                System.Console.WriteLine(alumno.ObtenerFicha());
+                System.Console.WriteLine(alumno);
                 System.Console.WriteLine(new string('-', 102));
             }
 

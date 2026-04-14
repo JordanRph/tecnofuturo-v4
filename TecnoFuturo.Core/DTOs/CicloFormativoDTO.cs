@@ -1,4 +1,5 @@
-﻿namespace TecnoFuturo.Core.DTOs
+﻿using TecnoFuturo.Core;
+namespace TecnoFuturo.Core.DTOs
 {
-    public record CicloFormativoDTO(string CicloFormativoId, string Nombre, string Turno);
+    public record CicloFormativoDTO(int CentroId,string CicloFormativoId, string Nombre, Turno Turno);
 }

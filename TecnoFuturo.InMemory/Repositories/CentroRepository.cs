@@ -17,7 +17,7 @@ public class CentroRepository : ICentroRepository
     
     public IReadOnlyList<CentroDTO> ObtenerCentros()
     {
-        return _centros.Values.Select(x => ToMap(x)).ToList(); ;
+        return [.. _centros.Values.Select(c => ToMap(c))]; ;
     }
 
     public CentroDTO? ObtenerCentroPorId(int id)

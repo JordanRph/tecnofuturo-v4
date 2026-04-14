@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
-
+using TecnoFuturo.Core.DTOs;
 namespace TecnoFuturo.InMemory.Repositories;
 
 public class CicloFormativoRepository : ICicloFormativoRepository
@@ -14,22 +14,22 @@ public class CicloFormativoRepository : ICicloFormativoRepository
         _serviceProvider = serviceProvider;
     }
     
-    public IReadOnlyList<CicloFormativo> ObtenerCiclosFormativos()
+    public IReadOnlyList<CicloFormativoDTO> ObtenerCiclosFormativos()
     {
-        return _ciclosFormativos.Values.ToList();
+        return [.. _ciclosFormativos.Values.Select(ToMap)];
     }
 
-    public IReadOnlyList<CicloFormativo> ObtenerCiclosFormativosPorCentro(int centroId)
+    public IReadOnlyList<CicloFormativoDTO> ObtenerCiclosFormativosPorCentro(int centroId)
     {
-        return _ciclosFormativos.Values.Where(c => c.CentroId == centroId).ToList();
+        return [.. _ciclosFormativos.Values.Where(c => c.CentroId == centroId).Select(ToMap)];
     }
 
-    public CicloFormativo? ObtenerCicloFormativoPorId(string id)
+    public CicloFormativoDTO? ObtenerCicloFormativoPorId(string id)
     {
-        return _ciclosFormativos.GetValueOrDefault(id);
+        return _ciclosFormativos.TryGetValue(id, out var c) ? ToMap(c) : null;
     }
 
-    public CicloFormativo InsertarCicloFormativo(CicloFormativo cicloFormativo)
+    public CicloFormativoDTO InsertarCicloFormativo(CicloFormativo cicloFormativo)
     {
         var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
         var centro = centroRepository.ObtenerCentroPorId(cicloFormativo.CentroId);
@@ -40,13 +40,13 @@ public class CicloFormativoRepository : ICicloFormativoRepository
         
         if (_ciclosFormativos.TryAdd(cicloFormativo.CicloFormativoId, cicloFormativo))
         {
-            return cicloFormativo;
+            return ToMap(cicloFormativo);
         }
 
         throw new InvalidOperationException("El ciclo formativo ya existe");
     }
 
-    public CicloFormativo ModificarCicloFormativo(CicloFormativo cicloFormativo)
+    public CicloFormativoDTO ModificarCicloFormativo(CicloFormativo cicloFormativo)
     {
         var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
         var centro = centroRepository.ObtenerCentroPorId(cicloFormativo.CentroId);
@@ -60,7 +60,8 @@ public class CicloFormativoRepository : ICicloFormativoRepository
             throw new ArgumentException("El ciclo formativo no existe", nameof(cicloFormativo));
         }
         
-        return _ciclosFormativos[cicloFormativo.CicloFormativoId] = cicloFormativo;
+        _ciclosFormativos[cicloFormativo.CicloFormativoId] = cicloFormativo;
+        return ToMap(cicloFormativo);
     }
 
     public bool BorrarCicloFormativo(string id)
@@ -83,5 +84,13 @@ public class CicloFormativoRepository : ICicloFormativoRepository
         }
         
         return _ciclosFormativos.Remove(id);
+    }
+    private CicloFormativoDTO ToMap(CicloFormativo c)
+    {
+        return new CicloFormativoDTO(
+            c.CentroId,
+            c.CicloFormativoId,
+            c.Nombre,
+            c.Turno);
     }
 }

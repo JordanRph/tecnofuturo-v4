@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
-
+using TecnoFuturo.Core.DTOs;
 namespace TecnoFuturo.InMemory.Repositories;
 
 public class ModuloRepository : IModuloRepository
@@ -14,57 +14,48 @@ public class ModuloRepository : IModuloRepository
         _serviceProvider = serviceProvider;
     }
     
-    public IReadOnlyList<Modulo> ObtenerModulos()
+    public IReadOnlyList<ModuloDTO> ObtenerModulos()
     {
-        return _modulos.Values.ToList();
+        return [.. _modulos.Values.Select(ToMap)];
     }
 
-    public IReadOnlyList<Modulo> ObtenerModulosPorCicloFormativo(string cicloFormativoId)
+    public IReadOnlyList<ModuloDTO> ObtenerModulosPorCicloFormativo(string cicloFormativoId)
     {
-        return _modulos.Values.Where(m => m.CicloFormativoId == cicloFormativoId).ToList();
+        return [.. _modulos.Values.Where(m => m.CicloFormativoId == cicloFormativoId).Select(ToMap)];
     }
 
-    public IReadOnlyList<Modulo> ObtenerModulosPorProfesor(string profesorNif)
+    public IReadOnlyList<ModuloDTO> ObtenerModulosPorProfesor(string profesorNif)
     {
-        return _modulos.Values.Where(m => m.ProfesorNif == profesorNif).ToList();
+        return [.. _modulos.Values.Where(m => m.ProfesorNif == profesorNif).Select(ToMap)];
     }
 
-    public Modulo? ObtenerModuloPorId(int id)
+    public ModuloDTO? ObtenerModuloPorId(int id)
     {
-        return _modulos.GetValueOrDefault(id);
+        return _modulos.TryGetValue(id, out var m) ? ToMap(m) : null;
     }
 
-    public Modulo InsertarModulo(Modulo modulo)
+    public ModuloDTO InsertarModulo(Modulo modulo)
     {
         var cicloFormativoRepository = _serviceProvider.GetRequiredService<ICicloFormativoRepository>();
         var cicloFormativo = cicloFormativoRepository.ObtenerCicloFormativoPorId(modulo.CicloFormativoId);
-        
-        if (cicloFormativo == null)
-        {
-            throw new ArgumentException("El ciclo formativo no existe", nameof(modulo.CicloFormativoId));
-        }
 
-        return _modulos.TryAdd(modulo.ModuloId, modulo)
-            ? modulo
+        return cicloFormativo == null
+            ? throw new ArgumentException("El ciclo formativo no existe", nameof(modulo.CicloFormativoId))
+            : _modulos.TryAdd(modulo.ModuloId, modulo)
+            ? ToMap(modulo)
             : throw new InvalidOperationException("El modulo ya existe");
     }
 
-    public Modulo ModificarModulo(Modulo modulo)
+    public ModuloDTO ModificarModulo(Modulo modulo)
     {
         var cicloFormativoRepository = _serviceProvider.GetRequiredService<ICicloFormativoRepository>();
-        var cicloFormativo = cicloFormativoRepository.ObtenerCicloFormativoPorId(modulo.CicloFormativoId);
-        
-        if (cicloFormativo == null)
-        {
-            throw new ArgumentException("El ciclo formativo no existe", nameof(modulo.CicloFormativoId));
-        }
-
+        var cicloFormativo = cicloFormativoRepository.ObtenerCicloFormativoPorId(modulo.CicloFormativoId) ?? throw new ArgumentException("El ciclo formativo no existe", nameof(modulo.CicloFormativoId));
         if (!_modulos.ContainsKey(modulo.ModuloId))
         {
             throw new ArgumentException("El modulo no existe", nameof(modulo.ModuloId));
         }
-        
-        return _modulos[modulo.ModuloId] = modulo;
+        _modulos[modulo.ModuloId] = modulo;
+        return ToMap(modulo);
     }
 
     public bool BorrarModulo(int id)
@@ -82,5 +73,14 @@ public class ModuloRepository : IModuloRepository
             return _modulos.Remove(id);
         }
         return false;
+    }
+    private ModuloDTO ToMap(Modulo m)
+    {
+        return new ModuloDTO(
+            m.CicloFormativoId,
+            m.ModuloId,
+            m.Nombre,
+            m.Horas,
+            m.ProfesorNif ?? string.Empty);
     }
 }

@@ -7,6 +7,7 @@ using TecnoFuturo.Core;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
 using TecnoFuturo.Core.Validators;
+using TecnoFuturo.Core.DTOs;
 
 namespace TecnoFuturo.Console.Servicios;
 
@@ -44,10 +45,10 @@ public class CentroServicio
     {
         
         _logger.LogInformation("Iniciando servicio de centro");
-        CicloFormativo? cicloFormativoSeleccionado = null;
-        Modulo? moduloSeleccionado = null;
+        CicloFormativoDTO? cicloFormativoSeleccionado = null;
+        ModuloDTO? moduloSeleccionado = null;
         System.Console.WriteLine("BIENVENIDO AL SISTEMA DE MATRICULACION DE ALUMNOS");
-        _centro.MostarInformacion();
+        _centro.MostrarInformacion();
         string? opcion;
         do
         {
@@ -256,9 +257,9 @@ public class CentroServicio
         }
     }
 
-    private CicloFormativo? SeleccionarCicloFormativo()
+    private CicloFormativoDTO? SeleccionarCicloFormativo()
     {
-        CicloFormativo? cicloFormativo;
+        CicloFormativoDTO? cicloFormativo;
         _centro.MostarCiclosFormativos(_cicloFormativoRepository);
         do
         {
@@ -281,7 +282,7 @@ public class CentroServicio
         return cicloFormativo;
     }
 
-    private void CrearModulo(CicloFormativo cicloFormativo)
+    private void CrearModulo(CicloFormativoDTO cicloFormativo)
     {
         try
         {
@@ -289,8 +290,8 @@ public class CentroServicio
             var modulo = new Modulo
             {
                 CicloFormativoId = cicloFormativo.CicloFormativoId,
-                ModuloId = Leer.Numero("Nombre del modulo [1-9999] : ", true, 1, 9999)!.Value,
-                Nombre = Leer.Cadena("Descripcion : ", true)!,
+                ModuloId = Leer.Numero("Id del modulo [1-9999] : ", true, 1, 9999)!.Value,
+                Nombre = Leer.Cadena("Nombre : ", true)!,
                 Horas = Leer.Numero("Horas [1-12] : ", true, 1, 12)!.Value
             };
             
@@ -313,9 +314,9 @@ public class CentroServicio
         }
     }
 
-    private Modulo? SeleccionarModulo(CicloFormativo cicloFormativo)
+    private ModuloDTO? SeleccionarModulo(CicloFormativoDTO cicloFormativo)
     {
-        Modulo? modulo;
+        ModuloDTO? modulo;
         cicloFormativo.MostrarModulos(_moduloRepository, _profesorRepository);
         do
         {
@@ -367,9 +368,9 @@ public class CentroServicio
         }
     }
 
-    private void RegistrarProfesorAModulo(Modulo modulo)
+    private void RegistrarProfesorAModulo(ModuloDTO modulo)
     {
-        Profesor? profesor;
+        ProfesorDTO? profesor;
         System.Console.WriteLine("REGISTRO DE PROFESOR A MODULO");
         _centro.MostrarProfesores(_profesorRepository);
 
@@ -389,12 +390,19 @@ public class CentroServicio
 
         try
         {
-            modulo.ProfesorNif = profesor.Nif;
-            
-            var validator = new ModuloValidator();
-            if (validator.Validate(modulo))
+            var moduloEntidad = new Modulo
             {
-                _moduloRepository.ModificarModulo(modulo);
+                CicloFormativoId = modulo.CicloFormativoId,
+                ModuloId = modulo.ModuloId,
+                Nombre = modulo.Nombre,
+                Horas = modulo.Horas,
+                ProfesorNif = profesor.Nif
+            };
+
+            var validator = new ModuloValidator();
+            if (validator.Validate(moduloEntidad))
+            {
+                _moduloRepository.ModificarModulo(moduloEntidad);
             }
             else
             {
@@ -408,7 +416,7 @@ public class CentroServicio
         }
     }
 
-    private void MatricularAlumno(CicloFormativo cicloFormativo)
+    private void MatricularAlumno(CicloFormativoDTO cicloFormativo)
     {
         System.Console.WriteLine("NUEVO REGISTRO DE MATRICULA");
         try

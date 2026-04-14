@@ -15,20 +15,21 @@ public class CicloFormativoRepositoryLista : ICicloFormativoRepository
 
     public IReadOnlyList<CicloFormativoDTO> ObtenerCiclosFormativos()
     {
-        return _ciclosFormativos.ToList();
+        return [.. _ciclosFormativos.Select(ToMap)];
     }
 
-    public IReadOnlyList<CicloFormativo> ObtenerCiclosFormativosPorCentro(int centroId)
+    public IReadOnlyList<CicloFormativoDTO> ObtenerCiclosFormativosPorCentro(int centroId)
     {
-        return _ciclosFormativos.Where(c => c.CentroId == centroId).ToList();
+        return [.. _ciclosFormativos.Where(c => c.CentroId == centroId).Select(ToMap)];
     }
 
-    public CicloFormativo? ObtenerCicloFormativoPorId(string id)
+    public CicloFormativoDTO? ObtenerCicloFormativoPorId(string id)
     {
-        return _ciclosFormativos.FirstOrDefault(c => c.CicloFormativoId == id);
+        var ciclo = _ciclosFormativos.FirstOrDefault(c => c.CicloFormativoId == id);
+        return ciclo == null ? null : ToMap(ciclo);
     }
 
-    public CicloFormativo InsertarCicloFormativo(CicloFormativo cicloFormativo)
+    public CicloFormativoDTO InsertarCicloFormativo(CicloFormativo cicloFormativo)
     {
         var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
         var centro = centroRepository.ObtenerCentroPorId(cicloFormativo.CentroId);
@@ -46,10 +47,10 @@ public class CicloFormativoRepositoryLista : ICicloFormativoRepository
         }
 
         _ciclosFormativos.Add(cicloFormativo);
-        return cicloFormativo;
+        return ToMap(cicloFormativo);
     }
 
-    public CicloFormativo ModificarCicloFormativo(CicloFormativo cicloFormativo)
+    public CicloFormativoDTO ModificarCicloFormativo(CicloFormativo cicloFormativo)
     {
         var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
         var centro = centroRepository.ObtenerCentroPorId(cicloFormativo.CentroId);
@@ -67,7 +68,7 @@ public class CicloFormativoRepositoryLista : ICicloFormativoRepository
         }
 
         _ciclosFormativos[index] = cicloFormativo;
-        return cicloFormativo;
+        return ToMap(cicloFormativo);
     }
 
     public bool BorrarCicloFormativo(string id)
@@ -98,8 +99,10 @@ public class CicloFormativoRepositoryLista : ICicloFormativoRepository
     private CicloFormativoDTO ToMap(CicloFormativo ciclo)
     {
         return new CicloFormativoDTO(
-            ciclo.Nombre,
+            ciclo.CentroId,
             ciclo.CicloFormativoId,
-            ciclo.Turno);
+            ciclo.Nombre,
+            ciclo.Turno
+        );
     }
 }

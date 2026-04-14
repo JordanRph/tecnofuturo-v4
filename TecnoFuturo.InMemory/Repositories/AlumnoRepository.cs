@@ -8,7 +8,7 @@ namespace TecnoFuturo.InMemory.Repositories;
 
 public class AlumnoRepository : IAlumnoRepository
 {
-    
+
     private readonly IServiceProvider _serviceProvider;
     private readonly Dictionary<string, Alumno> _alumnos = [];
 
@@ -19,18 +19,17 @@ public class AlumnoRepository : IAlumnoRepository
 
     public IReadOnlyList<AlumnoDTO> ObtenerAlumnos()
     {
-        return _alumnos.Values.Select(x=> ToMap(x)).ToList();
+        return [.. _alumnos.Values.Select(x => ToMap(x))];
     }
 
     public IReadOnlyList<AlumnoDTO> ObtenerAlumnosPorCicloFormativo(string cicloFormativoId)
     {
-        return _alumnos.Values
-        .Where(a => a.CicloFormativoId == cicloFormativoId).Select(ToMap).ToList();
+        return [.. _alumnos.Values.Where(a => a.CicloFormativoId == cicloFormativoId).Select(ToMap)];
     }
 
     public IReadOnlyList<AlumnoDTO> ObtenerAlumnosPorCentro(int centroId)
     {
-         return _alumnos.Values.Where(a => a.CentroId == centroId).Select(ToMap).ToList();
+        return [.. _alumnos.Values.Where(a => a.CentroId == centroId).Select(ToMap)];
     }
 
     public AlumnoDTO? ObtenerAlumnoPorNif(string nif)
@@ -75,7 +74,7 @@ public class AlumnoRepository : IAlumnoRepository
             throw new ArgumentException("El ciclo formativo no pertenece al centro del alumno", nameof(alumno));
         }
 
-         _alumnos[alumno.Nif] = alumno;
+        _alumnos[alumno.Nif] = alumno;
         return ToMap(alumno);
     }
 
@@ -91,11 +90,11 @@ public class AlumnoRepository : IAlumnoRepository
     {
         return new AlumnoDTO
         (
-            a.Nombre,
-            a.Nif,
-            a.Email,
-            a.Direccion,
-            a.Telefono
+             a.Nif,
+             a.Nombre,
+             a.Email,
+             a.Direccion ?? string.Empty,
+             a.Telefono ?? string.Empty
         );
     }
 }

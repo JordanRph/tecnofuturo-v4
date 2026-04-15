@@ -2,7 +2,7 @@
 
 namespace TecnoFuturo.Core.DTOs
 {
-    public record ProfesorDTO(string Nif, string Nombre, string Email, string Direccion, string Telefono) : IInfoDetallada
+    public record ProfesorDTO(string Nif, string Nombre, string? Email, string Direccion, string Telefono) : IInfoDetallada
     {
         public string ObtenerFicha()
         {

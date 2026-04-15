@@ -22,8 +22,7 @@ public class CentroRepository : ICentroRepository
 
     public CentroDTO? ObtenerCentroPorId(int id)
     {
-        var centro = _centros.GetValueOrDefault(id);
-        return centro is null ? null : ToMap(centro);
+        return _centros.TryGetValue(id, out var centro) ? ToMap(centro) : null;
     }
 
     public CentroDTO InsertarCentro(Centro centro)

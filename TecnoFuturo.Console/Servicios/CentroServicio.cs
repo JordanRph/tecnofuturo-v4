@@ -13,7 +13,7 @@ namespace TecnoFuturo.Console.Servicios;
 
 public class CentroServicio
 {
-    private readonly Centro _centro;
+    private readonly CentroDTO _centro;
     private readonly ICentroRepository _centroRepository;
     private readonly IAlumnoRepository _alumnoRepository;
     private readonly IProfesorRepository _profesorRepository;
@@ -30,15 +30,27 @@ public class CentroServicio
         _profesorRepository = profesorRepository;
         _cicloFormativoRepository = cicloFormativoRepository;
         _moduloRepository = moduloRepository;
-        _centro = new Centro
-        {
-            CentroId = configuracionCentro.Value.Id,
-            Nombre = configuracionCentro.Value.Nombre ?? "SIN CONFIGURAR",
-            Direccion = configuracionCentro.Value.Direccion ?? "SIN CONFIGURAR",
-            Telefono = configuracionCentro.Value.Telefono ?? "SIN CONFIGURAR",
 
-        };
-        _centroRepository.InsertarCentro(_centro);
+        var centro = _centroRepository.ObtenerCentroPorId(configuracionCentro.Value.Id);
+
+        if (_centro == null)
+        {
+             _centro = new CentroDTO
+             {
+                 CentroId = configuracionCentro.Value.Id,
+                 Nombre = configuracionCentro.Value.Nombre ?? "SIN CONFIGURAR",
+                 Direccion = configuracionCentro.Value.Direccion ?? "SIN CONFIGURAR",
+                 Telefono = configuracionCentro.Value.Telefono ?? "SIN CONFIGURAR",
+
+             };
+             _centroRepository.InsertarCentro(_centro);
+        }
+        else
+        {
+            _centro = centro;
+        }
+
+        
     }
     
     public void Run()
@@ -347,7 +359,7 @@ public class CentroServicio
                 Nif = Leer.Cadena("Introduzca el NIF:", true, @"^([0-9]{8}|[XYZxyz][0-9]{7})[a-zA-Z]$")!,
                 Nombre = Leer.Cadena("Introduzca el nombre:", true)!,
                 Direccion = Leer.Cadena("Introduzca la dirección:", true)!,
-                Email = Leer.Cadena("Introduzca el e-Mail:", true,@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")!,
+                Email = Leer.Cadena("Introduzca el e-Mail:", false,@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")!,
                 Telefono = Leer.Cadena("Introduzca el teléfono:", true)!
             };
             
@@ -426,7 +438,7 @@ public class CentroServicio
                 Nif = Leer.Cadena("NIF .......: ", true)!,
                 Nombre = Leer.Cadena("Nombre ....: ", true)!,
                 Direccion = Leer.Cadena("Dirección .: ", true)!,
-                Email = Leer.Cadena("e-Mail ....: ", true)!,
+                Email = Leer.Cadena("e-Mail ....: ", false)!,
                 Telefono = Leer.Cadena("Telefono ..: ", true)!,
                 CentroId = cicloFormativo.CentroId,
                 CicloFormativoId = cicloFormativo.CicloFormativoId,

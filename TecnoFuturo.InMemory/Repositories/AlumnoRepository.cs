@@ -4,6 +4,7 @@ using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
 
+
 namespace TecnoFuturo.InMemory.Repositories;
 
 public class AlumnoRepository : IAlumnoRepository
@@ -34,8 +35,7 @@ public class AlumnoRepository : IAlumnoRepository
 
     public AlumnoDTO? ObtenerAlumnoPorNif(string nif)
     {
-        var alumno = _alumnos.GetValueOrDefault(nif);
-        return alumno is null ? null : ToMap(alumno);
+        return _alumnos.TryGetValue(nif, out var alumno) ? ToMap(alumno) : null;
     }
 
     public AlumnoDTO InsertarAlumno(Alumno alumno)

@@ -26,7 +26,7 @@ public class CicloFormativoRepository : ICicloFormativoRepository
 
     public CicloFormativoDTO? ObtenerCicloFormativoPorId(string id)
     {
-        return _ciclosFormativos.TryGetValue(id, out var c) ? ToMap(c) : null;
+        return _ciclosFormativos.TryGetValue(id, out var ciclo) ? ToMap(ciclo) : null;
     }
 
     public CicloFormativoDTO InsertarCicloFormativo(CicloFormativo cicloFormativo)

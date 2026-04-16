@@ -29,11 +29,11 @@ class Program
 
         // 3. Registramos nuestro servicio consumidor
         builder.Services.AddSingleton<IMensageServicio, MensajeServicio>();
-        builder.Services.AddSingleton<ICentroRepository, JsonCentroRepository>();
+        builder.Services.AddSingleton<ICentroRepository, CsvCentroRepository>();
         builder.Services.AddSingleton<IModuloRepository, JsonModuloRepository>();
         builder.Services.AddSingleton<IProfesorRepository, JsonProfesorRepository>();
-        builder.Services.AddSingleton<IAlumnoRepository, BinAlumnoRepository>();
-        builder.Services.AddSingleton<ICicloFormativoRepository, JsonCicloFormativoRepository>();
+        builder.Services.AddSingleton<IAlumnoRepository, CsvAlumnoRepository>();
+        builder.Services.AddSingleton<ICicloFormativoRepository, CsvCicloFormativoRepository>();
         builder.Services.AddSingleton<CentroServicio>();
         var host = builder.Build();
 

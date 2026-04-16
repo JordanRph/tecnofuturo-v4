@@ -96,7 +96,6 @@ namespace TecnoFuturo.Data.CsvRepositories
                     var linea = $"{a.Nif};{a.Nombre};{a.Email ?? ""};{a.Direccion ?? ""};{a.Telefono ?? ""};{a.CentroId};{a.CicloFormativoId}";
                     writer.WriteLine(linea);
                 }
-            
         }
         private void Cargar()
         {

@@ -66,7 +66,8 @@ namespace TecnoFuturo.Data.JsonRpositories
 
         public bool BorrarCicloFormativo(string id)
         {
-            if (!_ciclosFormativos.TryGetValue(id, out var cicloFormativo)) return false;
+            if (!_ciclosFormativos.TryGetValue(id, out var cicloFormativo))
+                return false;
 
             var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
             var centro = centroRepository.ObtenerCentroPorId(cicloFormativo.CentroId);
@@ -83,7 +84,12 @@ namespace TecnoFuturo.Data.JsonRpositories
                 throw new InvalidOperationException("El ciclo formativo tiene modulos asociados");
             }
 
-            return _ciclosFormativos.Remove(id);
+            var eliminado = _ciclosFormativos.Remove(id);
+
+            if (eliminado)
+                Guardar();
+
+            return eliminado;
         }
         private CicloFormativoDTO ToMap(CicloFormativo c)
         {

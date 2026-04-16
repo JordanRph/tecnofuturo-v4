@@ -77,8 +77,9 @@ namespace TecnoFuturo.Data.JsonRpositories
                 {
                     throw new ArgumentException("El ciclo formativo no existe", nameof(modulo.CicloFormativoId));
                 }
-
-                return _modulos.Remove(id);
+                var eliminado = _modulos.Remove(id);
+                if (eliminado)
+                    Guardar();
             }
             return false;
         }

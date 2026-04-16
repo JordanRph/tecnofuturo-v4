@@ -46,8 +46,11 @@ namespace TecnoFuturo.Data.JsonRpositories
                 throw new ArgumentException("El alumno ya existe", nameof(alumno));
             }
 
-            ValidarAlumno(alumno);
-
+            var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
+            if (centroRepository.ObtenerCentroPorId(alumno.CentroId) == null)
+            {
+                throw new ArgumentException("El centro especificado no existe", nameof(alumno));
+            }
             _alumnos[alumno.Nif] = alumno;
             Guardar();
 
@@ -56,14 +59,21 @@ namespace TecnoFuturo.Data.JsonRpositories
 
         public AlumnoDTO ModificarAlumno(Alumno alumno)
         {
-            if (!_alumnos.ContainsKey(alumno.Nif)) throw new ArgumentException("El alumno no existe");
+            if (!_alumnos.ContainsKey(alumno.Nif))
+            {
+                throw new ArgumentException("El alumno no existe", nameof(alumno));
+            }
 
-            ValidarAlumno(alumno);
+            var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
+            if (centroRepository.ObtenerCentroPorId(alumno.CentroId) == null)
+            {
+                throw new ArgumentException("El centro especificado no existe", nameof(alumno));
+            }
 
             _alumnos[alumno.Nif] = alumno;
             Guardar();
-
             return ToMap(alumno);
+
         }
 
         public bool BorrarAlumno(string nif)
@@ -109,18 +119,6 @@ namespace TecnoFuturo.Data.JsonRpositories
 
             _alumnos = lista?.ToDictionary(x => x.Nif) ?? [];
         }
-        private void ValidarAlumno(Alumno alumno)
-        {
-            var centroRepository = _serviceProvider.GetRequiredService<ICentroRepository>();
-            var centro = centroRepository.ObtenerCentroPorId(alumno.CentroId)
-                ?? throw new ArgumentException("El centro no existe");
-
-            var cicloRepository = _serviceProvider.GetRequiredService<ICicloFormativoRepository>();
-            var ciclo = cicloRepository.ObtenerCicloFormativoPorId(alumno.CicloFormativoId)
-                ?? throw new ArgumentException("El ciclo no existe");
-
-            if (ciclo.CentroId != alumno.CentroId)
-                throw new ArgumentException("El ciclo no pertenece al centro");
-        }
+        
     }
 }

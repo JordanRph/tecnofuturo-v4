@@ -53,7 +53,7 @@ public class CentroServicio
                 Telefono = configuracionCentro.Value.Telefono ?? "SIN CONFIGURAR",
 
             };
-            _centroRepository.InsertarCentro(centroNuevo);
+            _centro = _centroRepository.InsertarCentro(centroNuevo);
         }
 
         

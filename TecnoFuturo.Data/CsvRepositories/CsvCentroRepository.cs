@@ -2,6 +2,7 @@
 using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Core.Validators;
 
 namespace TecnoFuturo.Data.CsvRepositories
 {
@@ -102,8 +103,6 @@ namespace TecnoFuturo.Data.CsvRepositories
 
         private void Cargar()
         {
-            try
-            {
                 _centros = [];
 
                 if (!File.Exists(_ruta))
@@ -123,20 +122,16 @@ namespace TecnoFuturo.Data.CsvRepositories
                     var partes = linea.Split(';');
 
                     if (partes.Length != 4)
-                    {
-                        throw new FormatException("Número de campos incorrectos.");
-                    }
+                        continue;
 
                     if (string.IsNullOrWhiteSpace(partes[0]))
-                        throw new FormatException($"Línea {numeroLinea}: El id no puede estar vacío");
+                        continue;
 
                     if (string.IsNullOrWhiteSpace(partes[1]))
-                        throw new FormatException($"Línea {numeroLinea}: El nombre no puede estar vacío");
+                        continue;
 
                     if (!int.TryParse(partes[0], out var centroId))
-                    {
-                        throw new FormatException($"Línea {numeroLinea}: CentroId inválido");
-                    }
+                        continue;
 
                     var centro = new Centro
                     {
@@ -145,18 +140,13 @@ namespace TecnoFuturo.Data.CsvRepositories
                         Direccion = string.IsNullOrWhiteSpace(partes[2]) ? null : partes[2],
                         Telefono = string.IsNullOrWhiteSpace(partes[3]) ? null : partes[3]
                     };
-                    
 
-                    if (_centros.ContainsKey(centro.CentroId))
+                    var validator = new CentroValidator();
+                    if (validator.Validate(centro))
                     {
-                        throw new FormatException($"Error en línea {numeroLinea}: ID duplicado ({centro.CentroId})");
+                        _centros.TryAdd(centro.CentroId, centro);
                     }
-
-                    _centros[centro.CentroId] = centro;
                 }
             }
-            catch { }
         }
     }
-}
-

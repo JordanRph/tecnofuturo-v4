@@ -86,9 +86,16 @@ namespace TecnoFuturo.Data.JsonRpositories
 
             var moduloRepository = _serviceProvider.GetRequiredService<IModuloRepository>();
             var modulosPorProfesor = moduloRepository.ObtenerModulosPorProfesor(nif);
-            return modulosPorProfesor.Count != 0
-                ? throw new InvalidOperationException("El profesor tiene modulos asignados")
-                : _profesores.Remove(nif);
+            if (modulosPorProfesor.Count != 0)
+            {
+                throw new InvalidOperationException("El profesor tiene modulos asignados");
+            }
+            var eliminado = _profesores.Remove(nif);
+
+            if (eliminado)
+                Guardar();
+
+            return eliminado;
         }
         private ProfesorDTO ToMap(Profesor p)
         {

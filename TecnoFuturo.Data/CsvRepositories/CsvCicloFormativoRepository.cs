@@ -3,6 +3,7 @@ using TecnoFuturo.Core;
 using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Core.Validators;
 
 namespace TecnoFuturo.Data.CsvRepositories
 {
@@ -132,25 +133,17 @@ namespace TecnoFuturo.Data.CsvRepositories
                 var partes = linea.Split(';');
 
                 if (partes.Length != 4)
-                {
-                    throw new FormatException("Número de campos incorrectos.");
-                }
+                    continue;
 
 
                 if (string.IsNullOrWhiteSpace(partes[1]))
-                    throw new FormatException($"Línea {numeroLinea}: El Id del ciclo no puede estar vacío");
-
+                    continue;
                 if (string.IsNullOrWhiteSpace(partes[2]))
-                    throw new FormatException($"Línea {numeroLinea}: El Nombre del ciclo no puede estar vacío");
-
+                    continue;
                 if (!int.TryParse(partes[0], out var centroId))
-                {
-                    throw new FormatException($"Línea {numeroLinea}: CentroId inválido");
-                }
+                    continue;
                 if (!Enum.TryParse<Turno>(partes[3], out var turno))
-                {
-                    throw new FormatException($"Línea {numeroLinea}: Turno inválido");
-                }
+                    continue;
                 var ciclo = new CicloFormativo
                 {
                     CentroId = centroId,
@@ -159,13 +152,11 @@ namespace TecnoFuturo.Data.CsvRepositories
                     Turno = turno
                 };
                 
-
-                if (_ciclosFormativos.ContainsKey(ciclo.CicloFormativoId))
+                var validator = new CicloFormativoValidator();
+                if (validator.Validate(ciclo))
                 {
-                    throw new FormatException($"Error en línea {numeroLinea}: Id del ciclo duplicado {ciclo.CicloFormativoId}");
-                }
-
-                _ciclosFormativos[ciclo.CicloFormativoId] = ciclo;
+                    _ciclosFormativos.TryAdd(ciclo.CicloFormativoId, ciclo);
+                } 
             }
         }
     }

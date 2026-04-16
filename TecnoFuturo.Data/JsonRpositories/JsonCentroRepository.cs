@@ -85,25 +85,36 @@ namespace TecnoFuturo.Data.JsonRpositories
         }
         private void Guardar()
         {
-            var json = JsonSerializer.Serialize(_centros.Values, new JsonSerializerOptions
+            try
             {
-                WriteIndented = true
-            });
+                var json = JsonSerializer.Serialize(_centros.Values, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
 
-            File.WriteAllText(_ruta, json);
+                File.WriteAllText(_ruta, json);
+            }
+            catch
+            {
+               
+            }
         }
 
         private void Cargar()
         {
-            if (!File.Exists(_ruta))
+            try
             {
-                _centros = [];
-                return;
-            }
-            var json = File.ReadAllText(_ruta);
-            var lista = JsonSerializer.Deserialize<List<Centro>>(json);
+                if (!File.Exists(_ruta))
+                {
+                    _centros = [];
+                    return;
+                }
+                var json = File.ReadAllText(_ruta);
+                var lista = JsonSerializer.Deserialize<List<Centro>>(json);
 
-            _centros = lista?.ToDictionary(c => c.CentroId) ?? [];
+                _centros = lista?.ToDictionary(c => c.CentroId) ?? [];
+            }
+            catch { }
         }
     }
 }

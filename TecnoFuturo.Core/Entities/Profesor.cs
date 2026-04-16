@@ -1,10 +1,12 @@
+using ProtoBuf;
 using TecnoFuturo.Core.Helpers;
 
 namespace TecnoFuturo.Core.Entities;
 
+[ProtoContract]
 public class Profesor : Persona, IInfoDetallada
 {
-    public int CentroId { get; set; }
+    [ProtoMember(21)] public int CentroId { get; set; }
 
     public string ObtenerFicha()
     {

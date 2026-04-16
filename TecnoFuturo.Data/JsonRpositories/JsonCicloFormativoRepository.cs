@@ -108,18 +108,16 @@ namespace TecnoFuturo.Data.JsonRpositories
         {
             if (!File.Exists(_ruta))
             {
+                _ciclosFormativos = [];
                 return;
             }
             var json = File.ReadAllText(_ruta);
             var lista = JsonSerializer.Deserialize<List<CicloFormativo>>(json);
 
-            if (lista == null)
-                return;
 
-            foreach (var ciclo in lista)
-            {
-                _ciclosFormativos[ciclo.CicloFormativoId] = ciclo;
-            }
+
+            _ciclosFormativos = lista?.ToDictionary(x => x.CicloFormativoId) ?? [];
+            
         }
     }
 }

@@ -1,9 +1,12 @@
+using ProtoBuf;
+
 namespace TecnoFuturo.Core.Entities;
 
+[ProtoContract]
 public class CicloFormativo
 {
-    public int CentroId { get; set; }
-    public string CicloFormativoId { get; set; } = null!;
-    public string Nombre { get; set; } = null!;
-    public Turno Turno { get; set; }
+    [ProtoMember(12)] public int CentroId { get; set; }
+    [ProtoMember(13)] public string CicloFormativoId { get; set; } = null!;
+    [ProtoMember(14)] public string Nombre { get; set; } = null!;
+    [ProtoMember(15)] public Turno Turno { get; set; }
 }

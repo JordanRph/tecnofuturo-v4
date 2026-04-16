@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.34.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TecnoFuturo.Core\TecnoFuturo.Core.csproj" />
   </ItemGroup>
 

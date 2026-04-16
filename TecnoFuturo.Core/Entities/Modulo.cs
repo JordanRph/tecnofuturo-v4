@@ -1,14 +1,16 @@
+using ProtoBuf;
 using TecnoFuturo.Core.Helpers;
 
 namespace TecnoFuturo.Core.Entities;
 
+[ProtoContract]
 public class Modulo : IInfoDetallada
 {
-    public string CicloFormativoId { get; set; } = null!;
-    public int ModuloId { get; set; }
-    public string? Nombre { get; set; }
-    public int Horas { get; set; }
-    public string? ProfesorNif { get; set; }
+    [ProtoMember(16)] public string CicloFormativoId { get; set; } = null!;
+    [ProtoMember(17)] public int ModuloId { get; set; }
+    [ProtoMember(18)] public string? Nombre { get; set; }
+    [ProtoMember(19)] public int Horas { get; set; }
+    [ProtoMember(20)] public string? ProfesorNif { get; set; }
 
     public string ObtenerFicha()
     {

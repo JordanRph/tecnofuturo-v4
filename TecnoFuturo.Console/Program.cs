@@ -10,7 +10,8 @@ using TecnoFuturo.Core.Repositories;
 using TecnoFuturo.Core.Servicios;
 using TecnoFuturo.Data.JsonRpositories;
 using TecnoFuturo.InMemory.Repositories;
-
+using TecnoFuturo.Data.CsvRepositories;
+using TecnoFuturo.Data.BinRepositories;
 namespace TecnoFuturo.Console;
 
 class Program
@@ -29,10 +30,10 @@ class Program
         // 3. Registramos nuestro servicio consumidor
         builder.Services.AddSingleton<IMensageServicio, MensajeServicio>();
         builder.Services.AddSingleton<ICentroRepository, JsonCentroRepository>();
-        builder.Services.AddSingleton<IModuloRepository, ModuloRepository>();
-        builder.Services.AddSingleton<IProfesorRepository, ProfesorRepository>();
-        builder.Services.AddSingleton<IAlumnoRepository, JsonAlumnoRepository>();
-        builder.Services.AddSingleton<ICicloFormativoRepository, CicloFormativoRepositoryLista>();
+        builder.Services.AddSingleton<IModuloRepository, JsonModuloRepository>();
+        builder.Services.AddSingleton<IProfesorRepository, JsonProfesorRepository>();
+        builder.Services.AddSingleton<IAlumnoRepository, BinAlumnoRepository>();
+        builder.Services.AddSingleton<ICicloFormativoRepository, JsonCicloFormativoRepository>();
         builder.Services.AddSingleton<CentroServicio>();
         var host = builder.Build();
 

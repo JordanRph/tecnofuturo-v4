@@ -13,7 +13,7 @@ namespace TecnoFuturo.Console.Servicios;
 
 public class CentroServicio
 {
-    private readonly CentroDTO _centro;
+    private readonly CentroDTO _centro = null!;
     private readonly ICentroRepository _centroRepository;
     private readonly IAlumnoRepository _alumnoRepository;
     private readonly IProfesorRepository _profesorRepository;
@@ -22,7 +22,12 @@ public class CentroServicio
     private readonly ILogger<CentroServicio> _logger;
 
     public CentroServicio(IOptions<ConfiguracionCentro> configuracionCentro,
-        ILogger<CentroServicio> logger, ICentroRepository centroRepository, IAlumnoRepository alumnoRepository, IProfesorRepository profesorRepository, ICicloFormativoRepository cicloFormativoRepository, IModuloRepository moduloRepository)
+        ILogger<CentroServicio> logger,
+        ICentroRepository centroRepository, 
+        IAlumnoRepository alumnoRepository, 
+        IProfesorRepository profesorRepository, 
+        ICicloFormativoRepository cicloFormativoRepository, 
+        IModuloRepository moduloRepository)
     {
         _logger = logger;
         _centroRepository = centroRepository;
@@ -33,21 +38,22 @@ public class CentroServicio
 
         var centro = _centroRepository.ObtenerCentroPorId(configuracionCentro.Value.Id);
 
-        if (_centro == null)
+        if (centro != null)
         {
-             _centro = new CentroDTO
-             {
-                 CentroId = configuracionCentro.Value.Id,
-                 Nombre = configuracionCentro.Value.Nombre ?? "SIN CONFIGURAR",
-                 Direccion = configuracionCentro.Value.Direccion ?? "SIN CONFIGURAR",
-                 Telefono = configuracionCentro.Value.Telefono ?? "SIN CONFIGURAR",
-
-             };
-             _centroRepository.InsertarCentro(_centro);
+            _centro = centro;
         }
         else
         {
-            _centro = centro;
+            
+            var centroNuevo = new Centro
+            {
+                CentroId = configuracionCentro.Value.Id,
+                Nombre = configuracionCentro.Value.Nombre ?? "SIN CONFIGURAR",
+                Direccion = configuracionCentro.Value.Direccion ?? "SIN CONFIGURAR",
+                Telefono = configuracionCentro.Value.Telefono ?? "SIN CONFIGURAR",
+
+            };
+            _centroRepository.InsertarCentro(centroNuevo);
         }
 
         

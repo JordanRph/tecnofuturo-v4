@@ -6,23 +6,16 @@ namespace TecnoFuturo.Console.Extensions;
 
 public static class Extensiones
 {
-    public static void MostrarInformacion(this Centro centro)
+    public static void MostrarInformacion(this CentroDTO centro)
     {
-        var centroDTO = new CentroDTO(
-            centro.CentroId,
-            centro.Nombre,
-            centro.Direccion,
-            centro.Telefono
-        );
-
-        System.Console.WriteLine(centroDTO);
+        System.Console.WriteLine(centro);
     }
 
     public static void MostarInformacion(this CicloFormativoDTO cicloFormativo)
     {
         System.Console.WriteLine(cicloFormativo);    }
 
-    public static void MostarCiclosFormativos(this Centro centro, ICicloFormativoRepository cicloFormativoRepository)
+    public static void MostarCiclosFormativos(this CentroDTO centro, ICicloFormativoRepository cicloFormativoRepository)
     {
         var ciclosFormativos = cicloFormativoRepository.ObtenerCiclosFormativosPorCentro(centro.CentroId);
         if (ciclosFormativos.Count == 0)
@@ -70,7 +63,7 @@ public static class Extensiones
         }
     }
 
-    public static void MostrarProfesores(this Centro centro, IProfesorRepository profesorRepository)
+    public static void MostrarProfesores(this CentroDTO centro, IProfesorRepository profesorRepository)
     {
         var profesores = profesorRepository.ObtenerProfesoresPorCentro(centro.CentroId);
         if (profesores.Count != 0)
@@ -112,7 +105,7 @@ public static class Extensiones
 
     }
 
-    public static void MostrarResumen(this Centro centro, ICicloFormativoRepository cicloFormativoRepository, IAlumnoRepository alumnoRepository)
+    public static void MostrarResumen(this CentroDTO centro, ICicloFormativoRepository cicloFormativoRepository, IAlumnoRepository alumnoRepository)
     {
         var ciclosFormativos = cicloFormativoRepository.ObtenerCiclosFormativosPorCentro(centro.CentroId);
         var alumnosCentro = alumnoRepository.ObtenerAlumnosPorCentro(centro.CentroId);

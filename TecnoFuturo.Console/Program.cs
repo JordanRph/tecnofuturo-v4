@@ -12,6 +12,8 @@ using TecnoFuturo.Data.JsonRpositories;
 using TecnoFuturo.InMemory.Repositories;
 using TecnoFuturo.Data.CsvRepositories;
 using TecnoFuturo.Data.BinRepositories;
+using TecnoFuturo.Data.Helpers;
+using TecnoFuturo.Data;
 namespace TecnoFuturo.Console;
 
 class Program
@@ -26,14 +28,16 @@ class Program
         // 2. VINCULACIÓN (Binding):
         // Decimos: "Toma la sección 'ConfiguracionCentro' del JSON y rellena la clase ConfiguracionCentro"
         builder.Services.Configure<ConfiguracionCentro>(builder.Configuration.GetSection(nameof(ConfiguracionCentro)));
+        builder.Services.Configure<DirectorioOption>(builder.Configuration.GetSection(nameof(DirectorioOption)));
 
         // 3. Registramos nuestro servicio consumidor
+        builder.Services.AddSingleton<JsonHelper>();
         builder.Services.AddSingleton<IMensageServicio, MensajeServicio>();
-        builder.Services.AddSingleton<ICentroRepository, BinCentroRepository>();
-        builder.Services.AddSingleton<IModuloRepository, BinModuloRepository>();
-        builder.Services.AddSingleton<IProfesorRepository, BinProfesorRepository>();
-        builder.Services.AddSingleton<IAlumnoRepository, BinAlumnoRepository>();
-        builder.Services.AddSingleton<ICicloFormativoRepository, BinCicloFormativoRepository>();
+        builder.Services.AddSingleton<ICentroRepository, JsonCentroRepository>();
+        builder.Services.AddSingleton<IModuloRepository, JsonModuloRepository>();
+        builder.Services.AddSingleton<IProfesorRepository, JsonProfesorRepository>();
+        builder.Services.AddSingleton<IAlumnoRepository, JsonAlumnoRepository>();
+        builder.Services.AddSingleton<ICicloFormativoRepository, JsonCicloFormativoRepository>();
         builder.Services.AddSingleton<CentroServicio>();
         var host = builder.Build();
 

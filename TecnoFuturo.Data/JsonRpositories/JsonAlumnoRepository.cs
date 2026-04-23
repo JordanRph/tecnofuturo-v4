@@ -2,20 +2,20 @@
 using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
-using System.Text.Json;
+using TecnoFuturo.Data.Helpers;
 
 namespace TecnoFuturo.Data.JsonRpositories
 {
     public class JsonAlumnoRepository : IAlumnoRepository
     {
+        private readonly JsonHelper _jsonHelper;
         private readonly IServiceProvider _serviceProvider;
         private Dictionary<string, Alumno> _alumnos = null!;
-        private readonly string _ruta;
 
-        public JsonAlumnoRepository(IServiceProvider serviceProvider)
+        public JsonAlumnoRepository(JsonHelper jsonHelper, IServiceProvider serviceProvider)
         {
+            _jsonHelper = jsonHelper;
             _serviceProvider = serviceProvider;
-            _ruta = Path.Combine(Directory.GetCurrentDirectory(), "alumnos.json");
             Cargar();
         }
 
@@ -96,29 +96,17 @@ namespace TecnoFuturo.Data.JsonRpositories
                  a.Telefono ?? string.Empty
             );
         }
-        private void Guardar()
-        {
 
-            var json = JsonSerializer.Serialize(_alumnos.Values, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            File.WriteAllText(_ruta, json);
-        }
         private void Cargar()
         {
-            if (!File.Exists(_ruta))
-            {
-                _alumnos = [];
-                return;
-            }
-
-            var json = File.ReadAllText(_ruta);
-            var lista = JsonSerializer.Deserialize<List<Alumno>>(json);
-
-            _alumnos = lista?.ToDictionary(x => x.Nif) ?? [];
+            var datos = _jsonHelper.LeerDatos<Alumno>("alumnos.json");
+            _alumnos = datos == null ? [] : datos.ToDictionary(a => a.Nif);
         }
-        
+
+        private void Guardar()
+        {
+            _jsonHelper.Guardar("alumnos.json",_alumnos.Values);
+        }
+
     }
 }

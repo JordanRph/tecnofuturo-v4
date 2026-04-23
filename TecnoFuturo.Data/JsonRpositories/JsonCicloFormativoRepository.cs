@@ -3,6 +3,7 @@ using System.Text.Json;
 using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Data.Helpers;
 
 namespace TecnoFuturo.Data.JsonRpositories
 {
@@ -10,12 +11,11 @@ namespace TecnoFuturo.Data.JsonRpositories
     {
         private readonly IServiceProvider _serviceProvider;
         private Dictionary<string, CicloFormativo> _ciclosFormativos = null!;
-        private readonly string _ruta;
-
-        public JsonCicloFormativoRepository(IServiceProvider serviceProvider)
+        private readonly JsonHelper _jsonHelper;
+        public JsonCicloFormativoRepository(JsonHelper jsonHelper,IServiceProvider serviceProvider)
         {
+            _jsonHelper = jsonHelper;
             _serviceProvider = serviceProvider;
-            _ruta = Path.Combine(Directory.GetCurrentDirectory(), "cicloformativo.json");
             Cargar();
         }
 
@@ -102,26 +102,14 @@ namespace TecnoFuturo.Data.JsonRpositories
        
         private void Guardar()
         {
-            var json = JsonSerializer.Serialize(_ciclosFormativos.Values, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-
-            File.WriteAllText(_ruta, json);
+            _jsonHelper.Guardar("ciclos.json", _ciclosFormativos.Values);
         }
 
         private void Cargar()
         {
-            if (!File.Exists(_ruta))
-            {
-                _ciclosFormativos = [];
-                return;
-            }
-            var json = File.ReadAllText(_ruta);
-            var lista = JsonSerializer.Deserialize<List<CicloFormativo>>(json);
+            var datos = _jsonHelper.LeerDatos<CicloFormativo>("ciclos.json");
+            _ciclosFormativos = datos == null ? [] : datos.ToDictionary(c => c.CicloFormativoId);
 
-            _ciclosFormativos = lista?.ToDictionary(x => x.CicloFormativoId) ?? [];
-            
         }
     }
 }

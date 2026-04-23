@@ -3,6 +3,8 @@ using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
 using System.Text.Json;
+using TecnoFuturo.Data.Helpers;
+using System.Runtime.CompilerServices;
 
 namespace TecnoFuturo.Data.JsonRpositories
 {
@@ -10,12 +12,12 @@ namespace TecnoFuturo.Data.JsonRpositories
     {
         private Dictionary<int, Centro> _centros = null!;
         private readonly IServiceProvider _serviceProvider;
-        private readonly string _ruta;
+        private JsonHelper _jsonHelper;
 
-        public JsonCentroRepository(IServiceProvider serviceProvider)
+        public JsonCentroRepository(JsonHelper jsonHelper, IServiceProvider serviceProvider)
         {
+            _jsonHelper = jsonHelper;
             _serviceProvider = serviceProvider;
-            _ruta = Path.Combine(Directory.GetCurrentDirectory(), "centros.json");
             Cargar();
         }
         public IReadOnlyList<CentroDTO> ObtenerCentros()
@@ -85,36 +87,13 @@ namespace TecnoFuturo.Data.JsonRpositories
         }
         private void Guardar()
         {
-            try
-            {
-                var json = JsonSerializer.Serialize(_centros.Values, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-
-                File.WriteAllText(_ruta, json);
-            }
-            catch
-            {
-               
-            }
+            _jsonHelper.Guardar("centros.json", _centros.Values);
         }
 
         private void Cargar()
         {
-            try
-            {
-                if (!File.Exists(_ruta))
-                {
-                    _centros = [];
-                    return;
-                }
-                var json = File.ReadAllText(_ruta);
-                var lista = JsonSerializer.Deserialize<List<Centro>>(json);
-
-                _centros = lista?.ToDictionary(c => c.CentroId) ?? [];
-            }
-            catch { }
+            var datos = _jsonHelper.LeerDatos<Centro>("centros.json");
+            _centros = datos == null ? [] : datos.ToDictionary(a => a.CentroId);
         }
     }
 }

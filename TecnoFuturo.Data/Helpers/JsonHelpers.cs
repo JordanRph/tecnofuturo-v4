@@ -6,16 +6,16 @@ namespace TecnoFuturo.Data.Helpers
 {
     public class JsonHelper
     {
-        private readonly string _directorioTabajo;
+        private readonly string _directorioTrabajo;
         private readonly JsonSerializerOptions _jsonOptions;
         public JsonHelper(IOptions<DirectorioOption> option)
         {
            
-                _directorioTabajo = Path.Combine(Directory.GetCurrentDirectory(), option.Value.Datos);
+                _directorioTrabajo = Path.Combine(Directory.GetCurrentDirectory(), option.Value.Datos);
 
-                if (Directory.Exists(_directorioTabajo))
+                if (!Directory.Exists(_directorioTrabajo))
                 {
-                    Directory.CreateDirectory(_directorioTabajo);
+                    Directory.CreateDirectory(_directorioTrabajo);
                 }
 
                 _jsonOptions = new JsonSerializerOptions
@@ -28,29 +28,31 @@ namespace TecnoFuturo.Data.Helpers
         {
             try
             {
-                string ruta = Path.Combine(_directorioTabajo, nombreArchivo);
+                string ruta = Path.Combine(_directorioTrabajo, nombreArchivo);
 
                 if (!File.Exists(ruta))
                 {
-                    return null;
+                    return new List<T>();
                 }
 
                 var json = File.ReadAllText(ruta);
                 if (string.IsNullOrEmpty(json))
                 {
-                    return null;
+                    return new List<T>();
                 }
 
                 return JsonSerializer.Deserialize<List<T>>(json);
             }
             catch 
             {
-              return null;
+                return new List<T>();
             }
         }
 
-        public void Guardar<T>(string ruta, IEnumerable<T> datos)
+        public void Guardar<T>(string nombreArchivo, IEnumerable<T> datos)
         {
+            string ruta = Path.Combine(_directorioTrabajo, nombreArchivo);
+
             var json = JsonSerializer.Serialize(datos, _jsonOptions);
             File.WriteAllText(ruta, json);
         }

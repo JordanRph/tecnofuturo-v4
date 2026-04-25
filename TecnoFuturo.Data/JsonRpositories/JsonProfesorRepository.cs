@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Data.Helpers;
 
 namespace TecnoFuturo.Data.JsonRpositories
 {
@@ -15,12 +16,12 @@ namespace TecnoFuturo.Data.JsonRpositories
     {
         private readonly IServiceProvider _serviceProvider;
         private Dictionary<string, Profesor> _profesores = [];
-        private readonly string _ruta = null!;
+        private readonly JsonHelper _jsonHelper;
 
-        public JsonProfesorRepository(IServiceProvider serviceProvider)
+        public JsonProfesorRepository(JsonHelper jsonHelper,IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _ruta = Path.Combine(Directory.GetCurrentDirectory(), "profesores.json");
+            _jsonHelper = jsonHelper;
             Cargar();
         }
 
@@ -108,23 +109,12 @@ namespace TecnoFuturo.Data.JsonRpositories
         }
         private void Guardar()
         {
-            var json = JsonSerializer.Serialize(_profesores.Values, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-            File.WriteAllText(_ruta, json);
+            _jsonHelper.Guardar("profesores.json", _profesores.Values);
         }
         private void Cargar()
         {
-            if (!File.Exists(_ruta))
-            {
-                _profesores = [];
-                return;
-            }
-            var json = File.ReadAllText(_ruta);
-            var lista = JsonSerializer.Deserialize<List<Profesor>>(json);
-
-            _profesores = lista?.ToDictionary(x => x.Nif) ?? [];
+            var datos = _jsonHelper.LeerDatos<Profesor>("profesores.json");
+            _profesores = datos == null ? [] : datos.ToDictionary(p => p.Nif);
         }
     }
 }

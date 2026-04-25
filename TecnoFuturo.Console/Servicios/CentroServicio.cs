@@ -8,6 +8,9 @@ using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
 using TecnoFuturo.Core.Validators;
 using TecnoFuturo.Core.DTOs;
+using TecnoFuturo.Data;
+using System.IO.Compression;
+using TecnoFuturo.Data.Helpers;
 
 namespace TecnoFuturo.Console.Servicios;
 
@@ -20,14 +23,16 @@ public class CentroServicio
     private readonly ICicloFormativoRepository _cicloFormativoRepository;
     private readonly IModuloRepository _moduloRepository;
     private readonly ILogger<CentroServicio> _logger;
-
+    private readonly IOptions<DirectorioOption> _directorioOption;
+    private readonly string _rutaDatos;
     public CentroServicio(IOptions<ConfiguracionCentro> configuracionCentro,
         ILogger<CentroServicio> logger,
-        ICentroRepository centroRepository, 
-        IAlumnoRepository alumnoRepository, 
-        IProfesorRepository profesorRepository, 
-        ICicloFormativoRepository cicloFormativoRepository, 
-        IModuloRepository moduloRepository)
+        ICentroRepository centroRepository,
+        IAlumnoRepository alumnoRepository,
+        IProfesorRepository profesorRepository,
+        ICicloFormativoRepository cicloFormativoRepository,
+        IModuloRepository moduloRepository,
+        IOptions<DirectorioOption> directorioOption)
     {
         _logger = logger;
         _centroRepository = centroRepository;
@@ -35,7 +40,10 @@ public class CentroServicio
         _profesorRepository = profesorRepository;
         _cicloFormativoRepository = cicloFormativoRepository;
         _moduloRepository = moduloRepository;
+        _directorioOption = directorioOption;
 
+        _rutaDatos = Path.Combine(Directory.GetCurrentDirectory(), directorioOption.Value.Datos);
+        Directory.CreateDirectory(_rutaDatos);
         var centro = _centroRepository.ObtenerCentroPorId(configuracionCentro.Value.Id);
 
         if (centro != null)
@@ -44,7 +52,7 @@ public class CentroServicio
         }
         else
         {
-            
+
             var centroNuevo = new Centro
             {
                 CentroId = configuracionCentro.Value.Id,
@@ -56,12 +64,12 @@ public class CentroServicio
             _centro = _centroRepository.InsertarCentro(centroNuevo);
         }
 
-        
+
     }
-    
+
     public void Run()
     {
-        
+
         _logger.LogInformation("Iniciando servicio de centro");
         CicloFormativoDTO? cicloFormativoSeleccionado = null;
         ModuloDTO? moduloSeleccionado = null;
@@ -70,7 +78,7 @@ public class CentroServicio
         string? opcion;
         do
         {
-            
+
             if (cicloFormativoSeleccionado != null)
             {
                 System.Console.WriteLine($"CICLO FORMATIVO SELECCIONADO : {cicloFormativoSeleccionado.Nombre}");
@@ -133,7 +141,7 @@ public class CentroServicio
                     else
                     {
                         System.Console.WriteLine("NO SE HA SELECCIONADO UN CICLO FORMATIVO");
-                    }                    
+                    }
                     break;
                 case "7":
                     if (cicloFormativoSeleccionado != null)
@@ -192,13 +200,19 @@ public class CentroServicio
                     _centro.MostrarResumen(_cicloFormativoRepository, _alumnoRepository);
                     break;
                 case "14":
+                    CrearBackup();
+                    break;
+                case "15":
+                    LimpiarBackups();
+                    break;
+                case "16":
                     System.Console.WriteLine("BYE BYE!");
                     break;
                 default:
                     System.Console.WriteLine("Opcion no valida.");
                     break;
             }
-        } while (opcion != "14");
+        } while (opcion != "16");
 
         _logger.LogInformation("Fin del servicio de centro");
     }
@@ -222,7 +236,9 @@ public class CentroServicio
         System.Console.WriteLine("| 11. Matricular alumno                    |");
         System.Console.WriteLine("| 12. Listar Alumnos                       |");
         System.Console.WriteLine("| 13. Resumen del centro                   |");
-        System.Console.WriteLine("| 14. Salir                                |");
+        System.Console.WriteLine("| 14. Crear copia de seguridad             |");
+        System.Console.WriteLine("| 15. Eliminar copias de seguridad         |");
+        System.Console.WriteLine("| 16. Salir                                |");
         System.Console.WriteLine(new string('=', 44));
     }
 
@@ -254,7 +270,7 @@ public class CentroServicio
             Nombre = nombre!,
             Turno = turno.Value
         };
-        
+
         var validator = new CicloFormativoValidator();
         if (validator.Validate(cicloFormativo))
         {
@@ -312,7 +328,7 @@ public class CentroServicio
                 Nombre = Leer.Cadena("Nombre : ", true)!,
                 Horas = Leer.Numero("Horas [1-12] : ", true, 1, 12)!.Value
             };
-            
+
             var validator = new ModuloValidator();
 
             if (validator.Validate(modulo))
@@ -323,7 +339,7 @@ public class CentroServicio
             {
                 System.Console.WriteLine("ERROR EN LA VALIDACION DE DATOS DEL MODULO");
             }
-            
+
         }
         catch (Exception e)
         {
@@ -365,10 +381,10 @@ public class CentroServicio
                 Nif = Leer.Cadena("Introduzca el NIF:", true, @"^([0-9]{8}|[XYZxyz][0-9]{7})[a-zA-Z]$")!,
                 Nombre = Leer.Cadena("Introduzca el nombre:", true)!,
                 Direccion = Leer.Cadena("Introduzca la dirección:", true)!,
-                Email = Leer.Cadena("Introduzca el e-Mail:", false,@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")!,
+                Email = Leer.Cadena("Introduzca el e-Mail:", false, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")!,
                 Telefono = Leer.Cadena("Introduzca el teléfono:", true)!
             };
-            
+
             var validator = new ProfesorValidator();
             if (validator.Validate(profesor))
             {
@@ -449,7 +465,7 @@ public class CentroServicio
                 CentroId = cicloFormativo.CentroId,
                 CicloFormativoId = cicloFormativo.CicloFormativoId,
             };
-            
+
             var validator = new AlumnoValidator();
             if (validator.Validate(alumno))
             {
@@ -460,12 +476,83 @@ public class CentroServicio
             {
                 System.Console.WriteLine("ERROR EN LA VALIDACION DE DATOS DEL ALUMNO");
             }
-            
+
         }
         catch (Exception ex)
         {
             System.Console.WriteLine(ex.Message);
             _logger.LogError(ex, "Error al registar un alumno en el ciclo formativo");
+        }
+    }
+    private void CrearBackup()
+    {
+        try
+        {
+            var rutaBackups = Path.Combine(_rutaDatos, "Backups");
+            var rutaTemporal = Path.Combine(_rutaDatos, "TempBackup");
+
+            Directory.CreateDirectory(rutaBackups);
+
+            if (Directory.Exists(rutaTemporal))
+            {
+                Directory.Delete(rutaTemporal, true);
+            }
+
+            Directory.CreateDirectory(rutaTemporal);
+
+            // Busco todos los archivos con las extensiones json, csv y bin en la carpeta raiz
+            // Pero no busco en las carpetas temporales ni en la carpeta Backups
+            var archivos = Directory.EnumerateFiles(_rutaDatos, "*.*", SearchOption.AllDirectories)
+            .Where(f =>
+                (f.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ||
+                 f.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ||
+                 f.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)) &&
+                !f.StartsWith(rutaTemporal, StringComparison.OrdinalIgnoreCase) &&
+                !f.StartsWith(rutaBackups, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var archivo in archivos)
+            {
+                var destino = Path.Combine(rutaTemporal, Path.GetFileName(archivo));
+                File.Copy(archivo, destino, true);
+            }
+            // Nombre único del archivo .zip
+            var nombreZip = $"Backup_{DateTime.Now:yyyyMMdd_HHmmss}.zip";
+            var rutaZip = Path.Combine(rutaBackups, nombreZip);
+
+            ZipFile.CreateFromDirectory(rutaTemporal, rutaZip);
+
+            Directory.Delete(rutaTemporal, true); // Cuando se crea el .zip, se elimina la carpeta temporal
+
+            System.Console.WriteLine($"COPIA DE SEGURIDAD GENERADA EN: {rutaZip}");
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine($"ERROR AL GENERAR EL BACKUP: {ex.Message}");
+            _logger.LogError(ex, "Error al generar la copia de seguridad");
+        }
+    }
+    private void LimpiarBackups()
+    {
+        try
+        {
+            var rutaBackups = Path.Combine(_rutaDatos, "Backups");
+
+            if (!Directory.Exists(rutaBackups))
+            {
+                System.Console.WriteLine("NO EXISTE LA CARPETA DE BACKUPS");
+                return;
+            }
+            
+            // Con el primer parámetro elimina la carpeta de backups, el segundo parámetro activa el borrado recursivo
+            // que elimina todos los archivos que haya dentro y los directorios y por último elimina el directorio principal
+            Directory.Delete(rutaBackups, true);
+
+            System.Console.WriteLine("BACKUPS ANTIGUOS ELIMINADOS");
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine($"ERROR AL LIMPIAR BACKUPS: {ex.Message}");
+            _logger.LogError(ex, "Error al limpiar backups antiguos");
         }
     }
 }

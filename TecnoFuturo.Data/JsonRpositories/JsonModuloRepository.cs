@@ -3,6 +3,7 @@ using System.Text.Json;
 using TecnoFuturo.Core.DTOs;
 using TecnoFuturo.Core.Entities;
 using TecnoFuturo.Core.Repositories;
+using TecnoFuturo.Data.Helpers;
 
 namespace TecnoFuturo.Data.JsonRpositories
 {
@@ -10,12 +11,12 @@ namespace TecnoFuturo.Data.JsonRpositories
     {
         private IServiceProvider _serviceProvider;
         private Dictionary<int, Modulo> _modulos = null!;
-        private readonly string _ruta;
+        private readonly JsonHelper _jsonHelper;
 
-        public JsonModuloRepository(IServiceProvider serviceProvider)
+        public JsonModuloRepository(JsonHelper jsonHelper, IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _ruta = Path.Combine(Directory.GetCurrentDirectory(), "modulos.json");
+            _jsonHelper = jsonHelper;
             Cargar();
         }
 
@@ -94,23 +95,12 @@ namespace TecnoFuturo.Data.JsonRpositories
         }
         private void Guardar()
         {
-            var json = JsonSerializer.Serialize(_modulos.Values, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
-            File.WriteAllText(_ruta,json);
+            _jsonHelper.Guardar("modulos.json", _modulos.Values);
         }
         private void Cargar()
         {
-            if (!File.Exists(_ruta))
-            {
-                _modulos = [];
-                return;
-            }
-            var json = File.ReadAllText(_ruta);
-            var lista = JsonSerializer.Deserialize<List<Modulo>>(json);
-
-            _modulos = lista?.ToDictionary(x => x.ModuloId) ?? [];
+            var datos = _jsonHelper.LeerDatos<Modulo>("modulos.json");
+            _modulos = datos == null ? [] : datos.ToDictionary(m => m.ModuloId);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace TecnoFuturo.Data.Helpers
         private readonly JsonSerializerOptions _jsonOptions;
         public JsonHelper(IOptions<DirectorioOption> option)
         {
-           
+                // Construyo la ruta de trabajo uniendo el directorio actual con la carpeta configurada en el appsettings.json
                 _directorioTrabajo = Path.Combine(Directory.GetCurrentDirectory(), option.Value.Datos);
 
                 if (!Directory.Exists(_directorioTrabajo))
@@ -45,6 +45,8 @@ namespace TecnoFuturo.Data.Helpers
             }
             catch 
             {
+                // Si ocurre cualquier error de lectura o deserialización, devuelvo una lista vacía para que la aplicación
+                // no se rompa
                 return new List<T>();
             }
         }

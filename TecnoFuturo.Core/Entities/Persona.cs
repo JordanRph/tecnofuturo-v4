@@ -11,4 +11,5 @@ public abstract class Persona
     [ProtoMember(3)] public string? Email { get; set; }
     [ProtoMember(4)] public string? Direccion { get; set; }
     [ProtoMember(5)] public string? Telefono { get; set; }
+    public bool EstaBorrado { get; set; } = false;
 }

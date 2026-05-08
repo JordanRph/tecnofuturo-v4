@@ -9,4 +9,5 @@ public class CicloFormativo
     [ProtoMember(13)] public string CicloFormativoId { get; set; } = null!;
     [ProtoMember(14)] public string Nombre { get; set; } = null!;
     [ProtoMember(15)] public Turno Turno { get; set; }
+    public bool EstaBorrado { get; set; } = false;
 }

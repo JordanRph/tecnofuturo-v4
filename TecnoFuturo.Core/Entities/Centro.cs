@@ -10,7 +10,7 @@ public class Centro : IInfoDetallada
     [ProtoMember(9)] public string Nombre { get; set; } = null!;
     [ProtoMember(10)] public string? Direccion { get; set; }
     [ProtoMember(11)] public string? Telefono { get; set; }
-
+    public bool EstaBorrado { get; set; } = false;
     public string ObtenerFicha()
     {
         return $"CENTRO: {Nombre} " +

@@ -11,7 +11,7 @@ public class Modulo : IInfoDetallada
     [ProtoMember(18)] public string? Nombre { get; set; }
     [ProtoMember(19)] public int Horas { get; set; }
     [ProtoMember(20)] public string? ProfesorNif { get; set; }
-
+    public bool EstaBorrado { get; set; } = false;
     public string ObtenerFicha()
     {
         return $"MODULO: {Nombre} " +
